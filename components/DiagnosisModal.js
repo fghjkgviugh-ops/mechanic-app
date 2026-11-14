@@ -92,7 +92,7 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
 
 // Малюнок категорії: для кузова — машина, для решти — схеми з PartDrawing
 // Категорії, для яких є фото (решта малюється схемою)
-const PHOTO_CATEGORIES = ['engine', 'chassis', 'body'];
+const PHOTO_CATEGORIES = ['engine', 'chassis', 'electric', 'body'];
 
 function CategoryIcon({ categoryId, broken, width }) {
   if (PHOTO_CATEGORIES.includes(categoryId)) return <Photo name={categoryId} width={width} />;
