@@ -8,7 +8,8 @@ import MapView from 'react-native-maps'; // компонент карти
 import * as Location from 'expo-location'; // доступ до GPS телефона
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'; // знає про "чубчик" і нижню смужку iPhone
 import OwnerCard from './components/OwnerCard'; // картка власника внизу
-import BreakdownBar from './components/BreakdownBar'; // панель "Що зламалося?" зверху
+import BreakdownBar from './components/BreakdownBar';
+import DiagnosisModal from './components/DiagnosisModal'; // вікно "Діагностика" // панель "Що зламалося?" зверху
 import { owner } from './data/owner'; // дані власника (поки приклад)
 
 // SafeAreaProvider "обгортає" застосунок, щоб панелі зверху і знизу знали,
@@ -28,7 +29,8 @@ function HomeScreen() {
   const [errorMsg, setErrorMsg] = useState(null); // текст помилки, якщо щось пішло не так
   const [cardHeight, setCardHeight] = useState(0); // висота картки внизу
   const [topHeight, setTopHeight] = useState(0); // висота панелі зверху
-  const [problem, setProblem] = useState(''); // що зламалося (текст)
+  const [problem, setProblem] = useState('');
+  const [diagnosisOpen, setDiagnosisOpen] = useState(false); // чи відкрите вікно діагностики // що зламалося (текст)
   const insets = useSafeAreaInsets();
 
   // useEffect з порожнім масивом [] виконується один раз — коли екран з'явився.
@@ -96,6 +98,7 @@ function HomeScreen() {
         <BreakdownBar
           value={problem}
           onChange={setProblem}
+          onOpen={() => setDiagnosisOpen(true)}
           onLayout={(event) => setTopHeight(event.nativeEvent.layout.height)}
         />
       </View>
@@ -107,6 +110,7 @@ function HomeScreen() {
           onLayout={(event) => setCardHeight(event.nativeEvent.layout.height)}
         />
       </View>
+      <DiagnosisModal visible={diagnosisOpen} problem={problem} onClose={() => setDiagnosisOpen(false)} />
       <StatusBar style="dark" />
     </View>
   );

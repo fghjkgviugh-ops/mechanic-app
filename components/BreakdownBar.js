@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import Svg, { Path } from 'react-native-svg';
 import { problems } from '../data/problems';
 
-export default function BreakdownBar({ value, onChange, onLayout }) {
+export default function BreakdownBar({ value, onChange, onOpen, onLayout }) {
   return (
     <View style={styles.panel} onLayout={onLayout}>
       {/* Поле для опису поломки */}
@@ -19,6 +19,9 @@ export default function BreakdownBar({ value, onChange, onLayout }) {
           placeholder="Що зламалося? Опиши проблему"
           placeholderTextColor="#8e8e93"
           returnKeyType="done" // кнопка на клавіатурі "Готово"
+          onSubmitEditing={() => {
+            if (value.trim()) onOpen?.(); // Enter після тексту теж відкриває діагностику
+          }}
         />
         {value ? (
           <Pressable onPress={() => onChange('')} hitSlop={10} accessibilityLabel="Очистити">
@@ -39,7 +42,14 @@ export default function BreakdownBar({ value, onChange, onLayout }) {
           return (
             <Pressable
               key={problem} // key — унікальна "мітка" кожного елемента списку, потрібна React
-              onPress={() => onChange(selected ? '' : problem)} // повторне натискання знімає вибір
+              onPress={() => {
+                if (selected) {
+                  onChange(''); // повторне натискання знімає вибір
+                } else {
+                  onChange(problem);
+                  onOpen?.(); // відкриваємо вікно "Діагностика"
+                }
+              }}
               style={[styles.chip, selected && styles.chipSelected]}
             >
               <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{problem}</Text>
