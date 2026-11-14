@@ -20,7 +20,7 @@ export default function OwnerCard({ owner, problem, onLayout }) {
     .slice(0, 2);
 
   return (
-    <View style={[styles.card, { paddingBottom: 16 + insets.bottom }]} onLayout={onLayout}>
+    <View style={[styles.card, { paddingBottom: 28 + insets.bottom }]} onLayout={onLayout}>
       {/* Сіра "ручка" зверху — підказує, що це панель поверх карти */}
       <View style={styles.handle} />
 
@@ -35,7 +35,7 @@ export default function OwnerCard({ owner, problem, onLayout }) {
           </Text>
           <Text style={styles.muted}>{car.color}</Text>
         </View>
-        <CarIcon width={150} />
+        <CarIcon width={170} />
       </View>
 
       {/* Якщо вказали поломку — показуємо її червоною плашкою */}
@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 20,
-    paddingTop: 10,
-    gap: 14,
+    paddingTop: 14,
+    gap: 20, // відстань між рядками картки: більше число — вища картка
     // Тінь (iOS) і "висота" (Android), щоб картка ніби лежала над картою
     shadowColor: '#000',
     shadowOpacity: 0.12,
