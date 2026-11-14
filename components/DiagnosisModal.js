@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CarIcon from './CarIcon';
 import PartDrawing from './PartDrawing';
+import Photo from './Photo';
 import { owner } from '../data/owner';
 import { categories, categoryOrder, problemDetails } from '../data/diagnosis';
 
@@ -90,8 +91,11 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
 }
 
 // Малюнок категорії: для кузова — машина, для решти — схеми з PartDrawing
+// Категорії, для яких є фото (решта малюється схемою)
+const PHOTO_CATEGORIES = ['engine', 'chassis', 'body'];
+
 function CategoryIcon({ categoryId, broken, width }) {
-  if (categoryId === 'body') return <CarIcon width={width} />;
+  if (PHOTO_CATEGORIES.includes(categoryId)) return <Photo name={categoryId} width={width} />;
   return <PartDrawing part={categoryId} broken={broken} width={width} />;
 }
 
@@ -114,8 +118,8 @@ function CategoryDetail({ categoryId, broken, onBack, onClose }) {
 
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.bigCard}>
-          {categoryId === 'body' ? (
-            <CarIcon width={300} />
+          {PHOTO_CATEGORIES.includes(categoryId) ? (
+            <Photo name={categoryId} width={300} />
           ) : (
             <PartDrawing part={categoryId} broken={list} width={300} />
           )}
