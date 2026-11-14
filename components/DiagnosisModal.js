@@ -1,19 +1,19 @@
 // components/DiagnosisModal.js — вікно "Діагностика", яке відкривається після вибору поломки.
-// Зверху — машина власника, нижче — частини авто. Натисни на частину, і побачиш її детально
-// та які деталі зламані (вони показані червоним).
+// Зверху — машина власника, нижче — колонка категорій: двигун, ходова частина, електрика, кузов.
+// Натисни на категорію — побачиш її малюнок і список пунктів (зламані позначені червоним).
 
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CarIcon from './CarIcon';
 import PartDrawing from './PartDrawing';
 import { owner } from '../data/owner';
-import { parts, partOrder, problemDetails } from '../data/diagnosis';
+import { categories, categoryOrder, problemDetails } from '../data/diagnosis';
 
 export default function DiagnosisModal({ visible, problem, onClose }) {
-  // selected — id частини, яку відкрито зараз. null — показуємо головний екран із частинами.
+  // selected — id категорії, яку відкрито зараз. null — показуємо колонку категорій.
   const [selected, setSelected] = useState(null);
 
-  // Зламані деталі для вибраної поломки. Для невідомого тексту це порожньо.
+  // Що зламано для цієї поломки. Для невідомого тексту це порожньо.
   const broken = problemDetails[problem] ?? {};
   const known = problem in problemDetails;
 
@@ -26,7 +26,12 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={close}>
       <View style={styles.screen}>
         {selected ? (
-          <PartDetail partId={selected} broken={broken} onBack={() => setSelected(null)} onClose={close} />
+          <CategoryDetail
+            categoryId={selected}
+            broken={broken}
+            onBack={() => setSelected(null)}
+            onClose={close}
+          />
         ) : (
           <View style={styles.flex}>
             <View style={styles.header}>
@@ -38,7 +43,7 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
 
             <ScrollView contentContainerStyle={styles.body}>
               <View style={styles.carCard}>
-                <CarIcon width={230} />
+                <CarIcon width={200} />
                 <Text style={styles.muted}>
                   {owner.car.make} {owner.car.model} · {owner.car.year} · {owner.car.color}
                 </Text>
@@ -46,22 +51,32 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
 
               {!known && (
                 <Text style={styles.note}>
-                  Для «{problem}» я не знаю, які деталі перевірити. Обери типову поломку зверху.
+                  Для «{problem}» я не знаю, що перевіряти. Обери типову поломку зверху.
                 </Text>
               )}
 
-              <View style={styles.grid}>
-                {partOrder.map((id) => {
+              {/* Колонка: іконка зліва, назва і стан справа */}
+              <View style={styles.column}>
+                {categoryOrder.map((id) => {
+                  const cat = categories[id];
                   const list = broken[id] ?? [];
+                  const bad = list.length > 0;
                   return (
                     <Pressable
                       key={id} // унікальна мітка елемента списку
                       onPress={() => setSelected(id)}
-                      style={[styles.tile, list.length > 0 && styles.tileBad]}
+                      style={[styles.row, bad && styles.rowBad]}
                     >
-                      {list.length > 0 && <View style={styles.dot} />}
-                      <PartDrawing part={id} broken={list} width={120} />
-                      <Text style={styles.tileText}>{parts[id].title}</Text>
+                      <View style={styles.rowIcon}>
+                        <CategoryIcon categoryId={id} broken={list} width={92} />
+                      </View>
+                      <View style={styles.rowText}>
+                        <Text style={styles.rowTitle}>{cat.title}</Text>
+                        <Text style={bad ? styles.rowBadText : styles.rowSub}>
+                          {bad ? `Пунктів: ${list.length}` : 'Без змін'}
+                        </Text>
+                      </View>
+                      <Text style={styles.chevron}>›</Text>
                     </Pressable>
                   );
                 })}
@@ -74,10 +89,16 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
   );
 }
 
-// Екран однієї частини: великий малюнок і список її деталей
-function PartDetail({ partId, broken, onBack, onClose }) {
-  const part = parts[partId];
-  const list = broken[partId] ?? [];
+// Малюнок категорії: для кузова — машина, для решти — схеми з PartDrawing
+function CategoryIcon({ categoryId, broken, width }) {
+  if (categoryId === 'body') return <CarIcon width={width} />;
+  return <PartDrawing part={categoryId} broken={broken} width={width} />;
+}
+
+// Екран однієї категорії: великий малюнок і список пунктів (параметрів)
+function CategoryDetail({ categoryId, broken, onBack, onClose }) {
+  const cat = categories[categoryId];
+  const list = broken[categoryId] ?? [];
 
   return (
     <View style={styles.flex}>
@@ -85,7 +106,7 @@ function PartDetail({ partId, broken, onBack, onClose }) {
         <Pressable onPress={onBack} hitSlop={10}>
           <Text style={styles.link}>‹ Назад</Text>
         </Pressable>
-        <Text style={styles.title}>{part.title}</Text>
+        <Text style={styles.title}>{cat.title}</Text>
         <Pressable onPress={onClose} hitSlop={10}>
           <Text style={styles.link}>Закрити</Text>
         </Pressable>
@@ -93,22 +114,26 @@ function PartDetail({ partId, broken, onBack, onClose }) {
 
       <ScrollView contentContainerStyle={styles.body}>
         <View style={styles.bigCard}>
-          <PartDrawing part={partId} broken={list} width={300} />
+          {categoryId === 'body' ? (
+            <CarIcon width={300} />
+          ) : (
+            <PartDrawing part={categoryId} broken={list} width={300} />
+          )}
         </View>
 
         <Text style={list.length ? styles.bad : styles.note}>
-          {list.length ? 'Зламані деталі показані червоним.' : 'За цією поломкою тут нічого не знайдено.'}
+          {list.length ? 'Позначені пункти показані червоним.' : 'За цією поломкою тут нічого не знайдено.'}
         </Text>
 
         <View style={styles.list}>
-          {part.details.map((d) => {
-            const isBad = list.includes(d.id);
+          {cat.items.map((item) => {
+            const isBad = list.includes(item.id);
             return (
-              <View key={d.id} style={styles.row}>
+              <View key={item.id} style={styles.itemRow}>
                 <View style={[styles.swatch, isBad && { backgroundColor: '#e5322d' }]} />
-                <Text style={styles.rowName}>{d.name}</Text>
+                <Text style={styles.itemName}>{item.name}</Text>
                 <Text style={[styles.status, isBad && styles.statusBad]}>
-                  {isBad ? 'Зламано' : 'Не виявлено'}
+                  {isBad ? cat.badLabel : cat.okLabel}
                 </Text>
               </View>
             );
@@ -151,29 +176,26 @@ const styles = StyleSheet.create({
     padding: 12,
     fontWeight: '500',
   },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 },
-  tile: {
-    width: '48%',
+  column: { gap: 10 },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     backgroundColor: '#fff',
     borderRadius: 16,
-    padding: 12,
-    alignItems: 'center',
-    gap: 8,
+    padding: 10,
+    paddingRight: 14,
   },
-  tileBad: { borderWidth: 1.5, borderColor: '#e5322d' },
-  dot: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#e5322d',
-  },
-  tileText: { fontSize: 14, fontWeight: '600', color: '#111', textAlign: 'center' },
+  rowBad: { borderWidth: 1.5, borderColor: '#e5322d' },
+  rowIcon: { width: 96, alignItems: 'center', justifyContent: 'center' },
+  rowText: { flex: 1, gap: 3 },
+  rowTitle: { fontSize: 16, fontWeight: '600', color: '#111' },
+  rowSub: { fontSize: 13, color: '#8e8e93' },
+  rowBadText: { fontSize: 13, color: '#b42318', fontWeight: '600' },
+  chevron: { fontSize: 24, color: '#c7c7cc' },
   bigCard: { backgroundColor: '#fff', borderRadius: 18, padding: 16, alignItems: 'center' },
   list: { backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden' },
-  row: {
+  itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
@@ -183,7 +205,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e0e0e4',
   },
   swatch: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#c9ced6' },
-  rowName: { flex: 1, fontSize: 15, color: '#111' },
-  status: { fontSize: 13, color: '#8e8e93' },
+  itemName: { flex: 1, fontSize: 15, color: '#111' },
+  status: { fontSize: 13, color: '#8e8e93', flexShrink: 0 },
   statusBad: { color: '#b42318', fontWeight: '600' },
 });

@@ -1,62 +1,68 @@
-// data/diagnosis.js — частини авто, їхні деталі і те, які деталі зламані для кожної поломки.
+// data/diagnosis.js — категорії авто, їхні пункти і те, що зламано для кожної поломки.
 // Це приклад: справжня діагностика потребує реальних даних або механіка.
 
-// Частини, які показуємо в головному списку (у цьому порядку)
-export const partOrder = ['engine', 'battery', 'wheel', 'brakes', 'cooling'];
+// Категорії в колонці (у цьому порядку)
+export const categoryOrder = ['engine', 'chassis', 'electric', 'body'];
 
-// Опис кожної частини: назва і список її деталей.
+// Кожна категорія: назва, підписи статусів і список пунктів.
 // id — внутрішня мітка, name — текст, який бачить людина.
-export const parts = {
+export const categories = {
   engine: {
     title: 'Двигун',
-    details: [
+    badLabel: 'Зламано',
+    okLabel: 'Не виявлено',
+    items: [
       { id: 'spark', name: 'Свічки запалювання' },
       { id: 'belt', name: 'Ремінь ГРМ' },
       { id: 'oil', name: 'Масляний фільтр' },
       { id: 'pump', name: 'Помпа охолодження' },
+      { id: 'radiator', name: 'Радіатор' },
+      { id: 'thermostat', name: 'Термостат' },
     ],
   },
-  battery: {
-    title: 'Акумулятор',
-    details: [
+  chassis: {
+    title: 'Ходова частина',
+    badLabel: 'Зламано',
+    okLabel: 'Не виявлено',
+    items: [
+      { id: 'tire', name: 'Шина' },
+      { id: 'rim', name: 'Диск колеса' },
+      { id: 'hub', name: 'Ступиця' },
+      { id: 'disc', name: 'Гальмівний диск' },
+      { id: 'pads', name: 'Гальмівні колодки' },
+    ],
+  },
+  electric: {
+    title: 'Електрика',
+    badLabel: 'Зламано',
+    okLabel: 'Не виявлено',
+    items: [
       { id: 'terminals', name: 'Клеми' },
       { id: 'battery', name: 'Сам акумулятор' },
       { id: 'alternator', name: 'Генератор' },
     ],
   },
-  wheel: {
-    title: 'Колесо / шина',
-    details: [
-      { id: 'tire', name: 'Шина' },
-      { id: 'rim', name: 'Диск' },
-      { id: 'hub', name: 'Ступиця' },
-    ],
-  },
-  brakes: {
-    title: 'Гальма',
-    details: [
-      { id: 'pads', name: 'Гальмівні колодки' },
-      { id: 'disc', name: 'Гальмівний диск' },
-      { id: 'fluid', name: 'Гальмівна рідина' },
-    ],
-  },
-  cooling: {
-    title: 'Охолодження',
-    details: [
-      { id: 'radiator', name: 'Радіатор' },
-      { id: 'thermostat', name: 'Термостат' },
+  body: {
+    title: 'Кузов',
+    badLabel: 'Потрібно зробити',
+    okLabel: 'Не потрібно',
+    items: [
+      { id: 'dents', name: "Виправлення вм'ятин" },
+      { id: 'sanding', name: 'Шліфування кузова під фарбу' },
+      { id: 'paint', name: 'Фарбування елементів кузова' },
     ],
   },
 };
 
-// Яка поломка → які деталі зламані (ключ — частина, значення — список id її деталей).
+// Яка поломка → що зламано (ключ — категорія, значення — список id її пунктів).
 // Текст, який ти написав сам, тут не знайдеться, і тоді нічого не підсвічується.
 export const problemDetails = {
-  'Не заводиться': { engine: ['spark'], battery: ['terminals', 'battery'] },
-  Акумулятор: { battery: ['battery', 'alternator'] },
-  'Колесо / шина': { wheel: ['tire'] },
-  Гальма: { brakes: ['pads'] },
+  'Не заводиться': { engine: ['spark'], electric: ['terminals', 'battery'] },
+  Акумулятор: { electric: ['battery', 'alternator'] },
+  'Колесо / шина': { chassis: ['tire'] },
+  Гальма: { chassis: ['pads', 'disc'] },
   Двигун: { engine: ['belt', 'spark'] },
-  Перегрів: { cooling: ['radiator', 'thermostat'], engine: ['pump'] },
+  Перегрів: { engine: ['radiator', 'thermostat', 'pump'] },
+  Кузов: { body: ['dents', 'sanding'] },
   Інше: {},
 };
