@@ -1,10 +1,19 @@
 // components/PartDrawing.js — намальовані схеми категорій авто (спрощено, у векторі SVG).
 // Кожна деталь має свій id. Якщо id є у списку broken — деталь малюється червоним.
-// Кузов малюється окремо: це CarIcon.
+// Кузов і частини з фото малюються окремо (CarIcon і Photo).
 
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
 
 const BROKEN = '#e5322d';
+
+// Отвори на диску колеса: п'ять точок по колу
+const LUGS = [
+  [100, 46],
+  [122.8, 62.6],
+  [114.1, 89.4],
+  [85.9, 89.4],
+  [77.2, 62.6],
+];
 
 // paint(id, звичайний_колір) — червоний, якщо деталь зламана, інакше звичайний колір
 const DRAWINGS = {
@@ -34,11 +43,23 @@ const DRAWINGS = {
   // Ходова частина: колесо з гальмівним диском і суportом із колодками
   chassis: (paint) => (
     <>
-      <Circle cx="100" cy="70" r="60" fill={paint('tire', '#151515')} />
+      <Circle cx="100" cy="70" r="60" fill="#151515" />
       <Circle cx="100" cy="70" r="50" fill={paint('disc', '#8a9099')} />
       <Rect x="118" y="50" width="34" height="40" rx="6" fill={paint('pads', '#3b4048')} />
-      <Circle cx="100" cy="70" r="36" fill={paint('rim', '#9aa1a9')} />
+      <Circle cx="100" cy="70" r="36" fill="#9aa1a9" />
       <Circle cx="100" cy="70" r="12" fill={paint('hub', '#4b5158')} />
+    </>
+  ),
+
+  // Колеса / шини: шина, диск з п'ятьма отворами і маточина
+  wheels: (paint) => (
+    <>
+      <Circle cx="100" cy="70" r="60" fill={paint('tire', '#151515')} />
+      <Circle cx="100" cy="70" r="44" fill={paint('rim', '#9aa1a9')} />
+      {LUGS.map(([x, y]) => (
+        <Circle key={`${x}-${y}`} cx={x} cy={y} r="6" fill="#6b737c" />
+      ))}
+      <Circle cx="100" cy="70" r="10" fill="#4b5158" />
     </>
   ),
 

@@ -1,6 +1,6 @@
 // components/DiagnosisModal.js — вікно "Діагностика", яке відкривається після вибору поломки.
-// Зверху — машина власника, нижче — колонка категорій: двигун, ходова частина, електрика, кузов.
-// Натисни на категорію — побачиш її малюнок і список пунктів (зламані позначені червоним).
+// Зверху — машина власника, нижче — колонка категорій: двигун, ходова, колеса, електрика, кузов.
+// Натисни на категорію — побачиш основні фактори зверху, малюнок і список пунктів.
 
 import { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -8,7 +8,7 @@ import CarIcon from './CarIcon';
 import PartDrawing from './PartDrawing';
 import Photo from './Photo';
 import { owner } from '../data/owner';
-import { categories, categoryOrder, problemDetails } from '../data/diagnosis';
+import { categories, categoryOrder, problemDetails, towAccess } from '../data/diagnosis';
 
 export default function DiagnosisModal({ visible, problem, onClose }) {
   // selected — id категорії, яку відкрито зараз. null — показуємо колонку категорій.
@@ -90,16 +90,16 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
   );
 }
 
-// Малюнок категорії: для кузова — машина, для решти — схеми з PartDrawing
-// Категорії, для яких є фото (решта малюється схемою)
+// Категорії, для яких є фото (решта малюється схемою з PartDrawing)
 const PHOTO_CATEGORIES = ['engine', 'chassis', 'electric', 'body'];
 
+// Малюнок категорії в колонці
 function CategoryIcon({ categoryId, broken, width }) {
   if (PHOTO_CATEGORIES.includes(categoryId)) return <Photo name={categoryId} width={width} />;
   return <PartDrawing part={categoryId} broken={broken} width={width} />;
 }
 
-// Екран однієї категорії: великий малюнок і список пунктів (параметрів)
+// Екран однієї категорії: основні фактори зверху, далі малюнок, пункти і (для коліс) евакуатор
 function CategoryDetail({ categoryId, broken, onBack, onClose }) {
   const cat = categories[categoryId];
   const list = broken[categoryId] ?? [];
@@ -117,6 +117,17 @@ function CategoryDetail({ categoryId, broken, onBack, onClose }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
+        {/* Основні фактори: що найчастіше буває з цією частиною */}
+        <View style={styles.factors}>
+          <Text style={styles.factorsTitle}>Основні фактори</Text>
+          {cat.factors.map((factor) => (
+            <View key={factor} style={styles.factorRow}>
+              <View style={styles.factorDot} />
+              <Text style={styles.factorText}>{factor}</Text>
+            </View>
+          ))}
+        </View>
+
         <View style={styles.bigCard}>
           {PHOTO_CATEGORIES.includes(categoryId) ? (
             <Photo name={categoryId} width={300} />
@@ -143,7 +154,34 @@ function CategoryDetail({ categoryId, broken, onBack, onClose }) {
             );
           })}
         </View>
+
+        {cat.tow && <TowCard />}
       </ScrollView>
+    </View>
+  );
+}
+
+// Картка евакуатора внизу. Кнопка працює лише тоді, коли є доступ до служби.
+function TowCard() {
+  const available = towAccess;
+
+  return (
+    <View style={styles.tow}>
+      <Text style={styles.towTitle}>Евакуатор</Text>
+      <Text style={styles.towText}>
+        Щоб викликати евакуатор з застосунку, потрібен доступ до служби евакуатора.
+      </Text>
+      <Pressable
+        disabled={!available}
+        style={[styles.towButton, !available && styles.towButtonOff]}
+        onPress={() => {
+          // Тут буде виклик евакуатора, коли підключимо службу
+        }}
+      >
+        <Text style={[styles.towButtonText, !available && styles.towButtonTextOff]}>
+          {available ? 'Викликати евакуатор' : 'Немає доступу до евакуатора'}
+        </Text>
+      </Pressable>
     </View>
   );
 }
@@ -197,6 +235,17 @@ const styles = StyleSheet.create({
   rowSub: { fontSize: 13, color: '#8e8e93' },
   rowBadText: { fontSize: 13, color: '#b42318', fontWeight: '600' },
   chevron: { fontSize: 24, color: '#c7c7cc' },
+  factors: { backgroundColor: '#fff', borderRadius: 16, padding: 14, gap: 9 },
+  factorsTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    color: '#8e8e93',
+  },
+  factorRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  factorDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#0a7aff' },
+  factorText: { flex: 1, fontSize: 15, color: '#111' },
   bigCard: { backgroundColor: '#fff', borderRadius: 18, padding: 16, alignItems: 'center' },
   list: { backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden' },
   itemRow: {
@@ -212,4 +261,11 @@ const styles = StyleSheet.create({
   itemName: { flex: 1, fontSize: 15, color: '#111' },
   status: { fontSize: 13, color: '#8e8e93', flexShrink: 0 },
   statusBad: { color: '#b42318', fontWeight: '600' },
+  tow: { backgroundColor: '#fff', borderRadius: 16, padding: 14, gap: 8 },
+  towTitle: { fontSize: 16, fontWeight: '700', color: '#111' },
+  towText: { fontSize: 14, lineHeight: 20, color: '#6b7280' },
+  towButton: { backgroundColor: '#0a7aff', borderRadius: 12, padding: 13, alignItems: 'center' },
+  towButtonOff: { backgroundColor: '#d1d1d6' },
+  towButtonText: { fontSize: 15, fontWeight: '600', color: '#fff' },
+  towButtonTextOff: { color: '#8e8e93' },
 });

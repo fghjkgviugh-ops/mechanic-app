@@ -1,16 +1,21 @@
-// data/diagnosis.js — категорії авто, їхні пункти і те, що зламано для кожної поломки.
+// data/diagnosis.js — категорії авто, їхні основні фактори, пункти і те, що зламано для кожної поломки.
 // Це приклад: справжня діагностика потребує реальних даних або механіка.
 
 // Категорії в колонці (у цьому порядку)
-export const categoryOrder = ['engine', 'chassis', 'electric', 'body'];
+export const categoryOrder = ['engine', 'chassis', 'wheels', 'electric', 'body'];
 
-// Кожна категорія: назва, підписи статусів і список пунктів.
+// Чи є доступ до служби евакуатора. Поки немає, кнопка виклику неактивна.
+export const towAccess = false;
+
+// Кожна категорія: назва, підписи статусів, основні фактори (зверху) і пункти.
+// factors — типові роботи та поломки, які найчастіше трапляються з цією частиною.
 // id — внутрішня мітка, name — текст, який бачить людина.
 export const categories = {
   engine: {
     title: 'Двигун',
     badLabel: 'Зламано',
     okLabel: 'Не виявлено',
+    factors: ['Заміна моторної оливи', 'Заміна оливи в коробці передач', 'Ланцюг або ремінь ГРМ'],
     items: [
       { id: 'spark', name: 'Свічки запалювання' },
       { id: 'belt', name: 'Ремінь ГРМ' },
@@ -24,18 +29,31 @@ export const categories = {
     title: 'Ходова частина',
     badLabel: 'Зламано',
     okLabel: 'Не виявлено',
+    factors: ['Амортизатори', 'Підшипники', 'Ступиця'],
     items: [
-      { id: 'tire', name: 'Шина' },
-      { id: 'rim', name: 'Диск колеса' },
       { id: 'hub', name: 'Ступиця' },
+      { id: 'shock', name: 'Амортизатори' },
+      { id: 'bearing', name: 'Підшипники' },
       { id: 'disc', name: 'Гальмівний диск' },
       { id: 'pads', name: 'Гальмівні колодки' },
     ],
+  },
+  wheels: {
+    title: 'Колеса / шини',
+    badLabel: 'Зламано',
+    okLabel: 'Не виявлено',
+    factors: ['Заміна шини', 'Пробиття (прокол) колеса'],
+    items: [
+      { id: 'tire', name: 'Шина' },
+      { id: 'rim', name: 'Диск колеса' },
+    ],
+    tow: true, // внизу показуємо картку евакуатора
   },
   electric: {
     title: 'Електрика',
     badLabel: 'Зламано',
     okLabel: 'Не виявлено',
+    factors: ['Заміна акумулятора', 'Генератор', 'Стартер'],
     items: [
       { id: 'terminals', name: 'Клеми' },
       { id: 'battery', name: 'Сам акумулятор' },
@@ -46,6 +64,7 @@ export const categories = {
     title: 'Кузов',
     badLabel: 'Потрібно зробити',
     okLabel: 'Не потрібно',
+    factors: ["Вм'ятини після ДТП", 'Корозія кузова', 'Подряпини і сколи'],
     items: [
       { id: 'dents', name: "Виправлення вм'ятин" },
       { id: 'sanding', name: 'Шліфування кузова під фарбу' },
@@ -59,7 +78,7 @@ export const categories = {
 export const problemDetails = {
   'Не заводиться': { engine: ['spark'], electric: ['terminals', 'battery'] },
   Акумулятор: { electric: ['battery', 'alternator'] },
-  'Колесо / шина': { chassis: ['tire'] },
+  'Колесо / шина': { wheels: ['tire'] },
   Гальма: { chassis: ['pads', 'disc'] },
   Двигун: { engine: ['belt', 'spark'] },
   Перегрів: { engine: ['radiator', 'thermostat', 'pump'] },
