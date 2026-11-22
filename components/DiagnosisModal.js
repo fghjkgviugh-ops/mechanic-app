@@ -2,13 +2,20 @@
 // Зверху — машина власника, нижче — колонка категорій: двигун, ходова, колеса, електрика, кузов.
 // Натисни на категорію — побачиш основні фактори зверху, малюнок і список пунктів.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CarIcon from './CarIcon';
 import PartDrawing from './PartDrawing';
 import Photo from './Photo';
 import { owner } from '../data/owner';
-import { categories, categoryOrder, detailingOptions, problemDetails, towAccess } from '../data/diagnosis';
+import {
+  categories,
+  categoryOrder,
+  detailingOptions,
+  problemDetails,
+  relevantCategories,
+  towAccess,
+} from '../data/diagnosis';
 
 export default function DiagnosisModal({ visible, problem, onClose }) {
   // selected — id категорії, яку відкрито зараз. null — показуємо колонку категорій.
@@ -17,6 +24,13 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
   // Що зламано для цієї поломки. Для невідомого тексту це порожньо.
   const broken = problemDetails[problem] ?? {};
   const known = problem in problemDetails;
+
+  // Тільки категорії, пов'язані з поломкою. Якщо така одна — відкриваємо її одразу.
+  const relevant = relevantCategories(problem);
+  const autoId = relevant.length === 1 ? relevant[0] : null;
+  useEffect(() => {
+    if (visible) setSelected(autoId);
+  }, [visible, autoId]);
 
   function close() {
     setSelected(null); // наступного разу відкриється головний екран
@@ -58,7 +72,7 @@ export default function DiagnosisModal({ visible, problem, onClose }) {
 
               {/* Колонка: іконка зліва, назва і стан справа */}
               <View style={styles.column}>
-                {categoryOrder.map((id) => {
+                {(relevant.length ? relevant : categoryOrder).map((id) => {
                   const cat = categories[id];
                   const list = broken[id] ?? [];
                   const bad = list.length > 0;

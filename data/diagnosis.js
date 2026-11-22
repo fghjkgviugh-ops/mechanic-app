@@ -103,3 +103,11 @@ export const problemDetails = {
   Детейлінг: { detailing: ['polish', 'seats'] },
   Інше: {},
 };
+
+// Категорії, пов'язані з поломкою, у порядку колонки.
+// Для невідомої або "Інше" поломки повертаємо порожньо (тоді показуємо всі категорії).
+export function relevantCategories(problem) {
+  const map = problemDetails[problem];
+  if (!map) return [];
+  return categoryOrder.filter((id) => id in map);
+}
