@@ -63,6 +63,21 @@ const DRAWINGS = {
     </>
   ),
 
+  // Детейлінг: людина з ганчіркою натирає машину
+  detailing: () => (
+    <>
+      <Rect x="70" y="62" width="120" height="36" rx="10" fill="#3b4048" />
+      <Rect x="100" y="42" width="60" height="24" rx="10" fill="#555c66" />
+      <Circle cx="95" cy="104" r="12" fill="#151515" />
+      <Circle cx="165" cy="104" r="12" fill="#151515" />
+      <Circle cx="36" cy="40" r="12" fill="#f2c9a0" />
+      <Path d="M36 54 V92" stroke="#2563eb" strokeWidth="10" strokeLinecap="round" />
+      <Path d="M36 92 L26 128 M36 92 L48 128" stroke="#1f2937" strokeWidth="8" strokeLinecap="round" />
+      <Path d="M36 62 L68 82" stroke="#2563eb" strokeWidth="8" strokeLinecap="round" />
+      <Circle cx="72" cy="84" r="7" fill="#fde68a" />
+    </>
+  ),
+
   // Електрика: акумулятор із клемами і генератор праворуч
   electric: (paint) => (
     <>

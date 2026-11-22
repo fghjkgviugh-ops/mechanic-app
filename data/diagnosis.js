@@ -2,7 +2,7 @@
 // Це приклад: справжня діагностика потребує реальних даних або механіка.
 
 // Категорії в колонці (у цьому порядку)
-export const categoryOrder = ['engine', 'chassis', 'wheels', 'electric', 'body'];
+export const categoryOrder = ['engine', 'chassis', 'wheels', 'electric', 'body', 'detailing'];
 
 // Чи є доступ до служби евакуатора. Поки немає, кнопка виклику неактивна.
 export const towAccess = false;
@@ -71,6 +71,17 @@ export const categories = {
       { id: 'paint', name: 'Фарбування елементів кузова' },
     ],
   },
+  detailing: {
+    title: 'Детейлінг',
+    badLabel: 'Потрібно зробити',
+    okLabel: 'Не потрібно',
+    factors: ['Поліровка кузова', 'Хімчистка салону'],
+    items: [
+      { id: 'polish', name: 'Поліровка кузова' },
+      { id: 'seats', name: 'Хімчистка сидінь' },
+      { id: 'interior', name: 'Чистка салону' },
+    ],
+  },
 };
 
 // Яка поломка → що зламано (ключ — категорія, значення — список id її пунктів).
@@ -83,5 +94,6 @@ export const problemDetails = {
   Двигун: { engine: ['belt', 'spark'] },
   Перегрів: { engine: ['radiator', 'thermostat', 'pump'] },
   Кузов: { body: ['dents', 'sanding'] },
+  Детейлінг: { detailing: ['polish', 'seats'] },
   Інше: {},
 };
