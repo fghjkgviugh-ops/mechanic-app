@@ -78,6 +78,18 @@ const DRAWINGS = {
     </>
   ),
 
+  // Діагностика автомобіля: машина і лупа над нею
+  diagnostics: () => (
+    <>
+      <Rect x="40" y="70" width="120" height="40" rx="10" fill="#3b4048" />
+      <Rect x="70" y="50" width="60" height="26" rx="8" fill="#555c66" />
+      <Circle cx="70" cy="114" r="11" fill="#151515" />
+      <Circle cx="140" cy="114" r="11" fill="#151515" />
+      <Circle cx="150" cy="52" r="22" fill="#e8f0fe" stroke="#2563eb" strokeWidth="6" />
+      <Path d="M166 68 L182 84" stroke="#2563eb" strokeWidth="8" strokeLinecap="round" />
+    </>
+  ),
+
   // Електрика: акумулятор із клемами і генератор праворуч
   electric: (paint) => (
     <>

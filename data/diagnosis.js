@@ -17,6 +17,16 @@ export const towAccess = false;
 // factors — типові роботи та поломки, які найчастіше трапляються з цією частиною.
 // id — внутрішня мітка, name — текст, який бачить людина.
 export const categories = {
+  diagnostics: {
+    title: 'Діагностика авто',
+    badLabel: 'Потрібна перевірка',
+    okLabel: 'Не потрібно',
+    factors: ['Огляд механіка', 'Комп\'ютерна діагностика помилок', 'Перевірка акумулятора і стартера'],
+    items: [
+      { id: 'inspection', name: 'Огляд механіка' },
+      { id: 'scan', name: 'Комп\'ютерна діагностика помилок' },
+    ],
+  },
   engine: {
     title: 'Двигун',
     badLabel: 'Зламано',
@@ -93,7 +103,7 @@ export const categories = {
 // Яка поломка → що зламано (ключ — категорія, значення — список id її пунктів).
 // Текст, який ти написав сам, тут не знайдеться, і тоді нічого не підсвічується.
 export const problemDetails = {
-  'Не заводиться': { engine: ['spark'], electric: ['terminals', 'battery'] },
+  'Не заводиться': { diagnostics: ['inspection'], engine: ['spark'], electric: ['terminals', 'battery'] },
   Акумулятор: { electric: ['battery', 'alternator'] },
   'Колесо / шина': { wheels: ['tire'] },
   Гальма: { chassis: ['pads', 'disc'] },
@@ -109,5 +119,6 @@ export const problemDetails = {
 export function relevantCategories(problem) {
   const map = problemDetails[problem];
   if (!map) return [];
-  return categoryOrder.filter((id) => id in map);
+  const order = ['diagnostics', ...categoryOrder];
+  return order.filter((id) => id in map);
 }
