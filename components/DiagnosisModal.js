@@ -8,7 +8,7 @@ import CarIcon from './CarIcon';
 import PartDrawing from './PartDrawing';
 import Photo from './Photo';
 import { owner } from '../data/owner';
-import { categories, categoryOrder, problemDetails, towAccess } from '../data/diagnosis';
+import { categories, categoryOrder, detailingOptions, problemDetails, towAccess } from '../data/diagnosis';
 
 export default function DiagnosisModal({ visible, problem, onClose }) {
   // selected — id категорії, яку відкрито зараз. null — показуємо колонку категорій.
@@ -103,6 +103,9 @@ function CategoryIcon({ categoryId, broken, width }) {
 function CategoryDetail({ categoryId, broken, onBack, onClose }) {
   const cat = categories[categoryId];
   const list = broken[categoryId] ?? [];
+  // Для детейлінгу: як обслужити (приїзд майстра або виїзд до майстерні)
+  const [service, setService] = useState(detailingOptions[0].id);
+  const chosen = detailingOptions.find((o) => o.id === service);
 
   return (
     <View style={styles.flex}>
@@ -127,6 +130,27 @@ function CategoryDetail({ categoryId, broken, onBack, onClose }) {
             </View>
           ))}
         </View>
+
+        {categoryId === 'detailing' && (
+          <View style={styles.service}>
+            <Text style={styles.factorsTitle}>Як обслужити</Text>
+            <View style={styles.segment}>
+              {detailingOptions.map((option) => {
+                const on = service === option.id;
+                return (
+                  <Pressable
+                    key={option.id}
+                    onPress={() => setService(option.id)}
+                    style={[styles.segBtn, on && styles.segBtnOn]}
+                  >
+                    <Text style={[styles.segText, on && styles.segTextOn]}>{option.title}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <Text style={styles.serviceText}>{chosen.text}</Text>
+          </View>
+        )}
 
         <View style={styles.bigCard}>
           {PHOTO_CATEGORIES.includes(categoryId) ? (
@@ -261,6 +285,13 @@ const styles = StyleSheet.create({
   itemName: { flex: 1, fontSize: 15, color: '#111' },
   status: { fontSize: 13, color: '#8e8e93', flexShrink: 0 },
   statusBad: { color: '#b42318', fontWeight: '600' },
+  service: { backgroundColor: '#fff', borderRadius: 16, padding: 14, gap: 10 },
+  segment: { flexDirection: 'row', gap: 8 },
+  segBtn: { flex: 1, backgroundColor: '#f2f2f7', borderRadius: 12, padding: 11, alignItems: 'center' },
+  segBtnOn: { backgroundColor: '#111' },
+  segText: { fontSize: 14, fontWeight: '600', color: '#111', textAlign: 'center' },
+  segTextOn: { color: '#fff' },
+  serviceText: { fontSize: 14, lineHeight: 20, color: '#6b7280' },
   tow: { backgroundColor: '#fff', borderRadius: 16, padding: 14, gap: 8 },
   towTitle: { fontSize: 16, fontWeight: '700', color: '#111' },
   towText: { fontSize: 14, lineHeight: 20, color: '#6b7280' },
