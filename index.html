@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#16181d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Гараж">
+  <title>Гараж</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <select id="carSelect" aria-label="Обрати авто"></select>
+    <button class="icon-btn" id="editCarBtn" aria-label="Редагувати авто">✎</button>
+  </header>
+
+  <main id="view"></main>
+
+  <button class="fab" id="fab" aria-label="Додати">+</button>
+
+  <nav class="tabbar">
+    <button data-tab="home" class="active"><span>🚗</span>Авто</button>
+    <button data-tab="history"><span>🔧</span>Історія</button>
+    <button data-tab="reminders"><span>⏰</span>Нагадування</button>
+    <button data-tab="stats"><span>📊</span>Витрати</button>
+  </nav>
+
+  <dialog id="dlg">
+    <form id="dlgForm" method="dialog"></form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
